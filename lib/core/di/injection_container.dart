@@ -19,6 +19,7 @@ import 'package:myapp/utils/internet_checking_utilities.dart';
 final getIt = GetIt.instance; // Or final sl = GetIt.instance;
 
 Future<void> init() async {
+
   // ==================! Features !====================
 
   // Authentication
