@@ -1,11 +1,10 @@
-// lib/features/authentication/presentation/pages/authentication_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/features/authentication/data/models/authentication_request.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_state.dart';
-import 'package:myapp/injection_container.dart'; // For accessing getIt
+import 'package:myapp/core/di/injection_container.dart';
 
 class AuthenticationPage extends StatelessWidget {
   const AuthenticationPage({super.key});

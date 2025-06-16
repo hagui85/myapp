@@ -1,5 +1,6 @@
-// lib/injection_container.dart
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:myapp/core/api/dio_client.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_local_data_source.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_local_data_source_impl.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_remote_data_source.dart';
@@ -9,7 +10,7 @@ import 'package:myapp/features/authentication/domain/use_cases/authentication_us
 import 'package:myapp/features/authentication/presentation/authentication_repository_impl.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
-import 'package:dio/dio.dart'; // For Dioimport 'package:shared_preferences/shared_preferences.dart';
+// For Dioimport 'package:shared_preferences/shared_preferences.dart';
 import 'package:myapp/utils/internet_checking_utilities.dart';
 // For network connectivity
 
@@ -40,15 +41,12 @@ Future<void> init() async {
   getIt.registerLazySingleton<AuthenticationRepository>(
     () => AuthenticationRepositoryImpl(
       remoteDataSource: getIt(),
-      localDataSource: getIt(),
+      localDataSource: getIt<AuthenticationLocalDataSourceImpl>(),
     ),
   );
 
   // Data sources
   getIt.registerLazySingleton<AuthenticationRemoteDataSource>(
-    // Pass your DioClient instance here. If you don't have a custom DioClient,
-    // you might pass the registered Dio instance directly.
-    // () => AuthenticationRemoteDataSourceImpl(getIt()), // Example with DioClient
     () => AuthenticationRemoteDataSourceImpl(
       dio: getIt(),
     ), // Pass the registered Dio instance
@@ -62,11 +60,10 @@ Future<void> init() async {
   // ==================! Core !====================
 
   // Network
+  //getIt.registerLazySingleton(() => Dio()); // Register Dio if you use it directly
   getIt.registerLazySingleton(
-    () => Dio(),
-  ); // Register Dio if you use it directly
-  // If you have a custom DioClient wrapper, register it like this:
-  // getIt.registerLazySingleton(() => DioClient(getIt())); // Pass the registered Dio instance
+    () => DioClient(getIt()),
+  ); // Pass the registered Dio instance
 
   getIt.registerLazySingleton(() => InternetCheckingUtilities());
   // You might also want to register a NetworkInfo interface and its implementation
@@ -84,5 +81,5 @@ Future<void> init() async {
 
   // External
   // You might register other external dependencies here (e.g., http client if you use it)
-  // getIt.registerLazySingleton(() => http.Client());
+  getIt.registerLazySingleton(() => http.Client());
 }
