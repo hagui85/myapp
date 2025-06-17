@@ -3,15 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/core/di/injection_container.dart';
 import 'package:myapp/core/ui/theme/app_theme.dart';
-import 'package:myapp/features/splash/presentation/pages/splash_page.dart';
-import 'package:myapp/quiz_section.dart';
-import 'package:myapp/features/videoPlayer/presentation/widgets/video_section.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:adaptive_theme/adaptive_theme.dart' as adaptive_theme;
-
-import 'package:myapp/features/authentication/presentation/pages/authentication_page.dart';
-import 'package:myapp/core/di/injection_locator.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:myapp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:myapp/core/router/router.dart' as my_router;
