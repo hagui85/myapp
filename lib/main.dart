@@ -1,105 +1,100 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:myapp/core/di/injection_container.dart';
+import 'package:myapp/core/ui/theme/app_theme.dart';
+import 'package:myapp/features/splash/presentation/pages/splash_page.dart';
 import 'package:myapp/quiz_section.dart';
 import 'package:myapp/features/videoPlayer/presentation/widgets/video_section.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:adaptive_theme/adaptive_theme.dart' as adaptive_theme;
 
-import 'package:myapp/splash_screen.dart';
 import 'package:myapp/features/authentication/presentation/pages/authentication_page.dart';
-void main() {
-  runApp(const MyApp());
+import 'package:myapp/core/di/injection_locator.dart';
+import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:myapp/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:myapp/core/router/router.dart' as my_router;
+import 'package:myapp/core/ui/theme/theme.dart';
+import 'package:myapp/features/splash/presentation/cubit/connectivity_cubit.dart';
+
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+void main() async {
+  return runZonedGuarded(
+    () async {
+      // Ensuring that all the widgets have been initialized.
+      WidgetsFlutterBinding.ensureInitialized();
+      await init();
+      runApp(const MyApp());
+    },
+    (error, stack) {
+      // Printing the error and stack trace in case of an uncaught exception.
+      debugPrint(stack.toString());
+      debugPrint(error.toString());
+    },
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/auth': (context) => AuthenticationPage(),
-      },
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.greenreturn
-        // MaterialApp(
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    QuizSection(),
-    VideoSection(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
+// This widget is the root of your application.
+// _MyAppState is the state object for MyApp widget.
+class _MyAppState extends State<MyApp> {
+  final _chronoTheme = const ChronoTheme(TextTheme());
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer),
-            label: 'Quiz',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.video_library),
-            label: 'Videos',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        onTap: _onItemTapped,
+    return MultiBlocProvider(
+      providers: [
+        // Language Management Bloc
+        //  BlocProvider<LanguageCubit>(
+        //  create: (context) => getIt<LanguageCubit>(),
+        //),
+        // Authentication Management Bloc
+        BlocProvider<AuthenticationCubit>(
+          create: (context) => getIt<AuthenticationCubit>(),
+        ),
+        // Splash Screen Management Bloc
+        BlocProvider<SplashCubit>(create: (context) => getIt<SplashCubit>()),
+        // Connectivity Management Bloc
+        BlocProvider<ConnectivityCubit>(
+          create: (context) => getIt<ConnectivityCubit>(),
+        ),
+      ],
+      child: AppTheme(
+        child: Builder(
+          builder: (context) {
+            // Adaptive Theme for Light and Dark Mode
+            return adaptive_theme.AdaptiveTheme(
+              debugShowFloatingThemeButton: false,
+              light: _chronoTheme.light(),
+              dark: _chronoTheme.dark(),
+              initial: adaptive_theme.AdaptiveThemeMode.light,
+              builder: (theme, darkTheme) => MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title:
+                    AppTheme.of(context)?.values.appName ?? "Default App Name",
+                theme: theme,
+                darkTheme: darkTheme,
+                // Application Routing
+                onGenerateRoute: my_router.Router.generateRoute,
+                // Localization Delegates and Supported Locales
+                localizationsDelegates: const [
+                  // AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                // supportedLocales: AppLocalizations.supportedLocales,
+                //locale: context.watch<LanguageCubit>().state.locale == LanguageEnum.fr ? const Locale.fromSubtags(languageCode: 'fr') : const Locale.fromSubtags(languageCode: 'en'),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
