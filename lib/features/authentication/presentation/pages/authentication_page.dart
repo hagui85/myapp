@@ -7,6 +7,7 @@ import 'package:myapp/features/authentication/presentation/cubit/authentication_
 import 'package:myapp/core/di/injection_container.dart';
 
 class AuthenticationPage extends StatelessWidget {
+  static const AUTHENTICATION = 'AuthenticationPage';
   const AuthenticationPage({super.key});
 
   @override

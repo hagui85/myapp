@@ -51,6 +51,11 @@ dependencies:
   animate_do: ^3.3.4 # Or the latest version
   flutter_launcher_icons: ^0.13.1 # Or the latest version
   flutter_native_splash: ^2.4.0 # Or the latest version
+  flutter_localizations:
+    sdk: flutter # Add this line
+  android_content_provider: ^0.5.2
+  intl: any
+  adaptive_theme: ^3.7.0
 
 
 
@@ -99,12 +104,12 @@ flutter:
   # example:
   # fonts:
   #   - family: Schyler
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: fonts/Roboto-Regular.ttf
-        - asset: fonts/Roboto-Bold.ttf
-          weight: 700
+  #fonts:
+    # family: Roboto
+     # fonts:
+      #  - asset: fonts/Roboto-Regular.ttf
+       # - asset: fonts/Roboto-Bold.ttf
+        #  weight: 700
 
   #   - family: Schyler
   #     fonts:

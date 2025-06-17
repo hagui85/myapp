@@ -16,71 +16,57 @@ import 'package:myapp/utils/internet_checking_utilities.dart';
 
 // Import other dependencies as needed (e.g., Failure, Exceptions, UseCase base class if not already imported)
 
-final getIt = GetIt.instance; // Or final sl = GetIt.instance;
+final getIt = GetIt.instance;
 
 Future<void> init() async {
-
-  // ==================! Features !====================
-
-  // Authentication
-  getIt.registerFactory(
-    () => AuthenticationCubit(
-      authenticationUseCase: getIt(),
-      // Register other authentication use cases if needed
-      // fetchCachedTokenUseCase: getIt(),
-      // fetchCachedRequestUseCase: getIt(),
-    ),
-  );
-
-  // Use cases
-  getIt.registerLazySingleton(() => AuthenticationUseCase(getIt()));
-  // Register other authentication use cases if needed
-  // getIt.registerLazySingleton(() => FetchCachedTokenUseCase(getIt()));
-  // getIt.registerLazySingleton(() => FetchCachedRequestUseCase(getIt()));
-
-  // Repository
-  getIt.registerLazySingleton<AuthenticationRepository>(
-    () => AuthenticationRepositoryImpl(
-      remoteDataSource: getIt(),
-      localDataSource: getIt<AuthenticationLocalDataSourceImpl>(),
-    ),
-  );
-
-  // Data sources
-  getIt.registerLazySingleton<AuthenticationRemoteDataSource>(
-    () => AuthenticationRemoteDataSourceImpl(
-      dio: getIt(),
-    ), // Pass the registered Dio instance
-  );
-
-  getIt.registerLazySingleton<AuthenticationLocalDataSource>(
-    // Pass your local storage instance here (e.g., SharedPreferences instance, Hive box)
-    () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt()),
-  );
-
-  // ==================! Core !====================
+  // ================== Core ==================
 
   // Network
-  //getIt.registerLazySingleton(() => Dio()); // Register Dio if you use it directly
-  getIt.registerLazySingleton(
-    () => DioClient(getIt()),
-  ); // Pass the registered Dio instance
+  getIt.registerLazySingleton(() => DioClient(getIt()));
 
+  // Utilities
   getIt.registerLazySingleton(() => InternetCheckingUtilities());
-  // You might also want to register a NetworkInfo interface and its implementation
-  // getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
 
   // Local Storage
-  // Register SharedPreferences instance
   final sharedPreferences = await SharedPreferences.getInstance();
   getIt.registerLazySingleton(() => sharedPreferences);
 
-  // If you use Hive, register your Hive box(es)
-  // await Hive.initFlutter();
-  // final authBox = await Hive.openBox('authBox');
-  // getIt.registerLazySingleton(() => authBox);
-
-  // External
-  // You might register other external dependencies here (e.g., http client if you use it)
+  // External libraries
   getIt.registerLazySingleton(() => http.Client());
+
+  // Initialize feature-specific dependencies
+  initFeatures();
+}
+
+void initFeatures() {
+  // ================== Features ==================
+
+  // === Authentication ===
+
+  // Cubits
+  getIt.registerFactory<AuthenticationCubit>(
+    () => AuthenticationCubit(authenticationUseCase: getIt()),
+  );
+
+  // Use Cases
+  getIt.registerLazySingleton<AuthenticationUseCase>(
+    () => AuthenticationUseCase(getIt()),
+  );
+
+  // Repositories
+  getIt.registerLazySingleton<AuthenticationRepository>(
+    () => AuthenticationRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
+  );
+
+  // Data Sources
+  getIt.registerLazySingleton<AuthenticationRemoteDataSource>(
+    () => AuthenticationRemoteDataSourceImpl(dio: getIt()),
+  );
+
+  getIt.registerLazySingleton<AuthenticationLocalDataSource>(
+    () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
 }
