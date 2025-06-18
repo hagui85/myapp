@@ -146,14 +146,14 @@ class SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       FadeTransition(
                         opacity: _animation,
                         child: Image.asset(
-                          'assets/images/splash_icon.png',
+                          'assets/images/spalsh_icon.png',
                           width: 100, // Adjust width as needed
                           height: 100, // Adjust height as needed
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        appInfo?.appName ?? 'Chrono Driver',
+                        appInfo?.appName ?? 'Chrono Formation',
                         style: const TextStyle(
                           fontSize: 22,
                           color: Colors.blue,

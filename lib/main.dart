@@ -64,11 +64,13 @@ class _MyAppState extends State<MyApp> {
           builder: (context) {
             // Adaptive Theme for Light and Dark Mode
             return adaptive_theme.AdaptiveTheme(
+
               debugShowFloatingThemeButton: false,
               light: _chronoTheme.light(),
               dark: _chronoTheme.dark(),
               initial: adaptive_theme.AdaptiveThemeMode.light,
               builder: (theme, darkTheme) => MaterialApp(
+                navigatorObservers: [routeObserver],
                 debugShowCheckedModeBanner: false,
                 title:
                     AppTheme.of(context)?.values.appName ?? "Default App Name",

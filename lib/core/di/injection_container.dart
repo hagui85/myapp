@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/core/api/dio_client.dart';
@@ -12,6 +13,12 @@ import 'package:myapp/features/authentication/presentation/cubit/authentication_
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
 // For Dioimport 'package:shared_preferences/shared_preferences.dart';
 import 'package:myapp/utils/internet_checking_utilities.dart';
+
+import '../../features/splash/data/repositories/connectivity_repository_impl.dart';
+import '../../features/splash/domain/repositories/connectivity_repository.dart';
+import '../../features/splash/domain/use_cases/check_internet_connection_use_case.dart';
+import '../../features/splash/presentation/cubit/connectivity_cubit.dart';
+import 'network_module.dart';
 // For network connectivity
 
 // Import other dependencies as needed (e.g., Failure, Exceptions, UseCase base class if not already imported)
@@ -21,6 +28,7 @@ final getIt = GetIt.instance;
 Future<void> init() async {
   // ================== Core ==================
 
+  getIt.registerLazySingleton(() => NetworkModule.provideDio());
   // Network
   getIt.registerLazySingleton(() => DioClient(getIt()));
 
@@ -69,4 +77,22 @@ void initFeatures() {
   getIt.registerLazySingleton<AuthenticationLocalDataSource>(
     () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt()),
   );
+
+
+  ///=========== Splash Module start ===========
+  /// Registering ConnectivityRepositoryImpl as a singleton
+  ///
+  getIt.registerLazySingleton(() => Connectivity());
+  getIt.registerLazySingleton<ConnectivityRepository>(() => ConnectivityRepositoryImpl(getIt<Connectivity>()));
+
+  getIt.registerFactory(
+        () => CheckInternetConnectionUseCase(
+      getIt<ConnectivityRepository>(),
+    ),
+  );
+  getIt.registerFactory<ConnectivityCubit>(() => ConnectivityCubit(
+    getIt<CheckInternetConnectionUseCase>(),
+  ));
+
+  ///=========== Splash Module end ===========
 }
