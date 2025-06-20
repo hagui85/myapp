@@ -2,6 +2,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/core/api/dio_client.dart';
+import 'package:myapp/core/preferences/preferences_repository.dart';
+import 'package:myapp/core/preferences/preferences_repository_impl.dart';
+import 'package:myapp/core/utils/shared_prefs_helper.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_local_data_source.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_local_data_source_impl.dart';
 import 'package:myapp/features/authentication/data/datasources/authentication_remote_data_source.dart';
@@ -26,8 +29,18 @@ import 'network_module.dart';
 final getIt = GetIt.instance;
 
 Future<void> init() async {
-  // ================== Core ==================
+  // --- External Dependencies ---
+  final sharedPrefs = await SharedPreferences.getInstance();
+  getIt.registerLazySingleton(() => sharedPrefs);
 
+  // ================== Core ==================
+  getIt.registerLazySingleton(
+    () => SharedPrefsHelper(getIt()),
+  ); // Register SharedPrefsHelper
+  getIt.registerLazySingleton<PreferencesRepository>(
+    // Register PreferencesRepository
+    () => PreferencesRepositoryImpl(getIt()),
+  );
   getIt.registerLazySingleton(() => NetworkModule.provideDio());
   // Network
   getIt.registerLazySingleton(() => DioClient(getIt()));
@@ -75,24 +88,23 @@ void initFeatures() {
   );
 
   getIt.registerLazySingleton<AuthenticationLocalDataSource>(
-    () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt()),
+    () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt() , preferencesRepository: getIt()),
   );
-
 
   ///=========== Splash Module start ===========
   /// Registering ConnectivityRepositoryImpl as a singleton
   ///
   getIt.registerLazySingleton(() => Connectivity());
-  getIt.registerLazySingleton<ConnectivityRepository>(() => ConnectivityRepositoryImpl(getIt<Connectivity>()));
+  getIt.registerLazySingleton<ConnectivityRepository>(
+    () => ConnectivityRepositoryImpl(getIt<Connectivity>()),
+  );
 
   getIt.registerFactory(
-        () => CheckInternetConnectionUseCase(
-      getIt<ConnectivityRepository>(),
-    ),
+    () => CheckInternetConnectionUseCase(getIt<ConnectivityRepository>()),
   );
-  getIt.registerFactory<ConnectivityCubit>(() => ConnectivityCubit(
-    getIt<CheckInternetConnectionUseCase>(),
-  ));
+  getIt.registerFactory<ConnectivityCubit>(
+    () => ConnectivityCubit(getIt<CheckInternetConnectionUseCase>()),
+  );
 
   ///=========== Splash Module end ===========
 }
