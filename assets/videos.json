@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "description": "Lorem ipsum dolor sit amet."
+  },
+  {
+    "id": 2,
+    "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "description": "Consectetur adipiscing elit."
+  },
+  {
+    "id": 3,
+    "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "description": "Sed do eiusmod tempor incididunt."
+  }
+]
