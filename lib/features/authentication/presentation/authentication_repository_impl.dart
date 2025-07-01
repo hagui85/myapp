@@ -25,7 +25,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     return authenticationResult.fold((failure) => Left(failure), (
       authenticationResponseModel,
     ) {
-      localDataSource.cacheA,uthenticationRequest(authenticationRequest);
+      localDataSource.cacheAuthenticationRequest(authenticationRequest);
       return Right(authenticationResponseModel.toEntity());
     });
   }
