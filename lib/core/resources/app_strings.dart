@@ -13,5 +13,6 @@ class AppStrings {
   static const String PROD_URL = "https://psm-flow.chronopost.fr/od/api/";
   // static const String PROD_URL = "https://xproto-chr.eu:50843/od/api/";
   static const String AUTH_URL_SUFFIX = "auth/login";
-  static const String AUTH_URL_SUFFIX_FLOW = "auth/loginInDegradedMode";
+  static const String AUTH_URL_SUFFIX_FLOW = "auth/login";
+  static const String FUNCTION_URL_SUFFIX_FLOW = "auth/login";
 }

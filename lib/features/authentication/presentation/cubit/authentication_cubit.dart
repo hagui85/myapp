@@ -1,6 +1,7 @@
 // lib/features/authentication/presentation/cubit/authentication_cubit.dart
 import 'package:bloc/bloc.dart';
 import 'package:myapp/features/authentication/data/models/authentication_request.dart';
+import 'package:myapp/features/authentication/data/models/login_params.dart';
 import 'package:myapp/features/authentication/domain/use_cases/authentication_use_case.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_state.dart'; // Assuming AuthenticationRequest is used here
 
@@ -17,7 +18,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     // required this.fetchCachedRequestUseCase,
   }) : super(AuthenticationInitial());
 
-  Future<void> login(AuthenticationRequest authenticationRequest) async {
+  /* Future<void> login(AuthenticationRequest authenticationRequest) async {
     emit(AuthenticationLoading());
     final result = await authenticationUseCase(authenticationRequest);
     result.fold(
@@ -26,6 +27,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       ), // Assuming Failure has a message property
       (authenticationEntity) =>
           emit(AuthenticationAuthenticated()), // You might pass the entity here
+    );
+  }*/
+  Future<void> login(LoginParams loginParams) async {
+    emit(AuthenticationLoading());
+
+    final result = await authenticationUseCase(loginParams);
+
+    result.fold(
+      (failure) => emit(AuthenticationError(failure.message)),
+      (authenticationEntity) => emit(AuthenticationAuthenticated()),
     );
   }
 

@@ -7,7 +7,9 @@ abstract class AuthenticationRepository {
   Future<Either<Failure, AuthenticationEntity>> loginUser(
     AuthenticationRequest authenticationRequest,
   );
-  Future<Either<Failure, AuthenticationRequest>> fetchCachedToken();
+
+  Future<Either<Failure, AuthenticationEntity>> fetchCachedToken();
+
   Future<Either<Failure, AuthenticationRequest>>
   fetchSavedAuthenticationRequestModel();
 }

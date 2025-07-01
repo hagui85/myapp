@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.chronopost.trainify
 
 import io.flutter.embedding.android.FlutterActivity
 
