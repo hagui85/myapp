@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'authentication_request.g.dart';
 
@@ -33,6 +34,23 @@ class AuthenticationRequest {
     this.snPsm,
     this.fullDegradedAuth,
   });
+
+  static int generateTimestamp(String imei) {
+    try {
+      final serial = imei.substring(imei.length - 7, imei.length - 1);
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final raw = '$serial$now';
+      return int.tryParse(raw.substring(0, 18)) ?? now;
+    } catch (_) {
+      return DateTime.now().millisecondsSinceEpoch;
+    }
+  }
+
+  static String getFormattedDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('yyyyMMdd');
+    return formatter.format(now);
+  }
 
   factory AuthenticationRequest.fromJson(Map<String, dynamic> json) =>
       _$AuthenticationRequestFromJson(json);

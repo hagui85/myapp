@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:myapp/features/chewie_video/data/datasources/chewie_video_local_data_source.dart';
+import 'package:myapp/features/chewie_video/data/datasources/chewie_video_local_data_source_impl.dart';
 import 'package:myapp/features/chewie_video/data/models/chewie_video_model.dart';
 
 class MockChewieVideoLocalDataSource extends Mock
@@ -14,9 +15,7 @@ class MockChewieVideoLocalDataSource extends Mock
 
 @GenerateMocks([ChewieVideoLocalDataSource])
 void main() {
-
-  setUp(() {
-  });
+  setUp(() {});
 
   test(
     'should return a list of ChewieVideoModel from assets/videos.json',

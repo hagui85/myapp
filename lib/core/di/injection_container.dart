@@ -13,6 +13,18 @@ import 'package:myapp/features/authentication/domain/repositories/authentication
 import 'package:myapp/features/authentication/domain/use_cases/authentication_use_case.dart';
 import 'package:myapp/features/authentication/presentation/authentication_repository_impl.dart';
 import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:myapp/features/chewie_video/data/datasources/chewie_video_local_data_source.dart';
+import 'package:myapp/features/chewie_video/data/datasources/chewie_video_local_data_source_impl.dart';
+import 'package:myapp/features/chewie_video/data/datasources/chewie_video_remote_data_source.dart';
+import 'package:myapp/features/chewie_video/data/repositories/chewie_video_repository_impl.dart';
+import 'package:myapp/features/chewie_video/domain/repositories/chewie_video_repository.dart';
+import 'package:myapp/features/chewie_video/domain/usecases/chewie_video_use_case.dart';
+import 'package:myapp/features/chewie_video/domain/usecases/get_chewie_videos_use_case.dart';
+import 'package:myapp/features/chewie_video/presentation/cubit/chewie_video_cubit.dart';
+import 'package:myapp/features/chewie_video/presentation/cubit/video_list_cubit.dart';
+import 'package:myapp/features/splash/data/repositories/splash_repositories_imp.dart';
+import 'package:myapp/features/splash/domain/repositories/splash_repositories.dart';
+import 'package:myapp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
 // For Dioimport 'package:shared_preferences/shared_preferences.dart';
 import 'package:myapp/utils/internet_checking_utilities.dart';
@@ -49,8 +61,8 @@ Future<void> init() async {
   getIt.registerLazySingleton(() => InternetCheckingUtilities());
 
   // Local Storage
-  final sharedPreferences = await SharedPreferences.getInstance();
-  getIt.registerLazySingleton(() => sharedPreferences);
+  // final sharedPreferences = await SharedPreferences.getInstance();
+  //getIt.registerLazySingleton(() => sharedPreferences);
 
   // External libraries
   getIt.registerLazySingleton(() => http.Client());
@@ -70,14 +82,20 @@ void initFeatures() {
   );
 
   // Use Cases
-  getIt.registerLazySingleton<AuthenticationUseCase>(
-    () => AuthenticationUseCase(getIt()),
-  );
+  //getIt.registerLazySingleton<AuthenticationUseCase>(
+   // () => AuthenticationUseCase(getIt()),
+  //);
+
+  getIt.registerLazySingleton(() => AuthenticationUseCase(
+repository: getIt<AuthenticationRepository>(),
+  preferencesRepository: getIt<PreferencesRepository>(),
+));
+
 
   // Repositories
   getIt.registerLazySingleton<AuthenticationRepository>(
     () => AuthenticationRepositoryImpl(
-      remoteDataSource: getIt(),
+      authenticationRemoteDataSource: getIt(),
       localDataSource: getIt(),
     ),
   );
@@ -88,7 +106,43 @@ void initFeatures() {
   );
 
   getIt.registerLazySingleton<AuthenticationLocalDataSource>(
-    () => AuthenticationLocalDataSourceImpl(sharedPreferences: getIt() , preferencesRepository: getIt()),
+    () => AuthenticationLocalDataSourceImpl(
+      sharedPreferences: getIt(),
+      preferencesRepository: getIt(),
+    ),
+  );
+
+  // === Chewie Video ===
+  // Data Sources
+  getIt.registerLazySingleton<ChewieVideoLocalDataSource>(
+    () => ChewieVideoLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ChewieVideoRemoteDataSource>(
+    () => ChewieVideoRemoteDataSourceImpl(dio: getIt()),
+  );
+
+  // Repositories
+  getIt.registerLazySingleton<ChewieVideoRepository>(
+    () => ChewieVideoRepositoryImpl(
+      localDataSource: getIt(),
+      remoteDataSource: getIt(),
+      preferencesRepository: getIt(),
+    ),
+  );
+
+  // Use Cases
+  getIt.registerLazySingleton<GetChewieVideosUseCase>(
+    () => GetChewieVideosUseCase(getIt()),
+  );
+  getIt.registerLazySingleton(() => PlayVideoUseCase());
+
+  getIt.registerFactory<VideoListCubit>(
+    () => VideoListCubit(getChewieVideosUseCase: getIt()),
+  );
+
+  getIt.registerFactory<ChewieVideoCubit>(
+    () => ChewieVideoCubit(playVideoUseCase: getIt()),
   );
 
   ///=========== Splash Module start ===========
@@ -107,4 +161,14 @@ void initFeatures() {
   );
 
   ///=========== Splash Module end ===========
+  // Splash Repository Implementation à implémenter si pas encore fait
+getIt.registerLazySingleton<SplashRepositories>(
+  () => SplashRepositoriesImpl(preferencesRepository: getIt()),
+);
+
+// Splash Cubit
+getIt.registerFactory<SplashCubit>(
+  () => SplashCubit(getIt<SplashRepositories>()),
+);
+
 }

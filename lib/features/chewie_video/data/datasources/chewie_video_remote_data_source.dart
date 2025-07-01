@@ -1,3 +1,4 @@
+import 'package:myapp/core/api/dio_client.dart';
 import 'package:myapp/features/chewie_video/data/models/chewie_video_model.dart';
 
 abstract class ChewieVideoRemoteDataSource {
@@ -5,6 +6,10 @@ abstract class ChewieVideoRemoteDataSource {
 }
 
 class ChewieVideoRemoteDataSourceImpl implements ChewieVideoRemoteDataSource {
+  final DioClient dio;
+
+  ChewieVideoRemoteDataSourceImpl({required this.dio});
+
   @override
   Future<List<ChewieVideoModel>> getChewieVideos() {
     // TODO: Implement remote data fetching

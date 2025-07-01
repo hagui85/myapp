@@ -1,27 +1,23 @@
 import 'package:bloc/bloc.dart';
 import 'package:chewie/chewie.dart';
-import 'package:video_player/video_player.dart';
 
 import 'chewie_video_state.dart';
+import '../../domain/usecases/chewie_video_use_case.dart';
 
 class ChewieVideoCubit extends Cubit<ChewieVideoState> {
-  VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
+  final PlayVideoUseCase playVideoUseCase;
 
-  ChewieVideoCubit() : super(ChewieVideoInitial());
+  ChewieVideoCubit({required this.playVideoUseCase})
+    : super(const ChewieVideoInitial());
 
-  Future<void> initializePlayer(String videoUrl) async {
-    emit(ChewieVideoLoading());
+  Future<void> initializePlayer(
+    String videoPath,
+    VideoSourceType sourceType,
+  ) async {
+    emit(const ChewieVideoLoading());
     try {
-      _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl),
-      );
-      await _videoPlayerController!.initialize();
-      _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController!,
-        autoPlay: true,
-        looping: true,
-      );
+      _chewieController = await playVideoUseCase.execute(videoPath, sourceType);
       emit(ChewieVideoLoaded(_chewieController!));
     } catch (e) {
       emit(ChewieVideoError('Failed to load video: ${e.toString()}'));
@@ -30,10 +26,8 @@ class ChewieVideoCubit extends Cubit<ChewieVideoState> {
 
   @override
   Future<void> close() {
-    _videoPlayerController?.dispose();
+    _chewieController?.videoPlayerController.dispose();
     _chewieController?.dispose();
     return super.close();
   }
 }
-// This is a dummy file to help create the directory structure.
-// You can remove this file once the structure is in place.

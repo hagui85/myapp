@@ -5,24 +5,24 @@ import 'package:myapp/core/di/injection_container.dart';
 import 'package:myapp/core/ui/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:adaptive_theme/adaptive_theme.dart' as adaptive_theme;
 import 'package:myapp/features/authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:myapp/features/chewie_video/presentation/cubit/chewie_video_cubit.dart';
+import 'package:myapp/features/chewie_video/presentation/cubit/video_list_cubit.dart';
 import 'package:myapp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:myapp/core/router/router.dart' as my_router;
-import 'package:myapp/core/ui/theme/theme.dart';
+import 'package:myapp/core/ui/theme/chrono_theme.dart';
 import 'package:myapp/features/splash/presentation/cubit/connectivity_cubit.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 void main() async {
   return runZonedGuarded(
     () async {
-      // Ensuring that all the widgets have been initialized.
       WidgetsFlutterBinding.ensureInitialized();
       await init();
       runApp(const MyApp());
     },
     (error, stack) {
-      // Printing the error and stack trace in case of an uncaught exception.
       debugPrint(stack.toString());
       debugPrint(error.toString());
     },
@@ -36,58 +36,41 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-// This widget is the root of your application.
-// _MyAppState is the state object for MyApp widget.
 class _MyAppState extends State<MyApp> {
-  final _chronoTheme = const ChronoTheme(TextTheme());
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // Language Management Bloc
-        //  BlocProvider<LanguageCubit>(
-        //  create: (context) => getIt<LanguageCubit>(),
-        //),
-        // Authentication Management Bloc
-        BlocProvider<AuthenticationCubit>(
-          create: (context) => getIt<AuthenticationCubit>(),
-        ),
-        // Splash Screen Management Bloc
-        BlocProvider<SplashCubit>(create: (context) => getIt<SplashCubit>()),
-        // Connectivity Management Bloc
-        BlocProvider<ConnectivityCubit>(
-          create: (context) => getIt<ConnectivityCubit>(),
-        ),
+        BlocProvider(create: (_) => getIt<SplashCubit>()),
+        BlocProvider(create: (_) => getIt<ConnectivityCubit>()),
+        BlocProvider(create: (_) => getIt<AuthenticationCubit>()),
+        BlocProvider(create: (_) => getIt<VideoListCubit>()),
+        BlocProvider(create: (_) => getIt<ChewieVideoCubit>()),
       ],
       child: AppTheme(
+        // Injecte le thème ici
+        themeData: ChronoTheme.light,
         child: Builder(
           builder: (context) {
-            // Adaptive Theme for Light and Dark Mode
-            return adaptive_theme.AdaptiveTheme(
+            final themeData = AppTheme.of(context)!.themeData;
 
-              debugShowFloatingThemeButton: false,
-              light: _chronoTheme.light(),
-              dark: _chronoTheme.dark(),
-              initial: adaptive_theme.AdaptiveThemeMode.light,
-              builder: (theme, darkTheme) => MaterialApp(
-                navigatorObservers: [routeObserver],
-                debugShowCheckedModeBanner: false,
-                title:
-                    AppTheme.of(context)?.values.appName ?? "Default App Name",
-                theme: theme,
-                darkTheme: darkTheme,
-                // Application Routing
-                onGenerateRoute: my_router.Router.generateRoute,
-                // Localization Delegates and Supported Locales
-                localizationsDelegates: const [
-                  // AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                // supportedLocales: AppLocalizations.supportedLocales,
-                //locale: context.watch<LanguageCubit>().state.locale == LanguageEnum.fr ? const Locale.fromSubtags(languageCode: 'fr') : const Locale.fromSubtags(languageCode: 'en'),
-              ),
+            return MaterialApp(
+              navigatorObservers: [routeObserver],
+              debugShowCheckedModeBanner: false,
+              title: AppTheme.of(context)?.values.appName ?? "Default App Name",
+              theme: ChronoTheme.light,
+              darkTheme: ChronoTheme.dark,
+              themeMode:
+                  ThemeMode.system, // peut être light/dark si tu veux forcer
+              onGenerateRoute: my_router.Router.generateRoute,
+              localizationsDelegates: const [
+                // AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              // supportedLocales: AppLocalizations.supportedLocales,
+              // locale: ... gestion locale si besoin,
             );
           },
         ),

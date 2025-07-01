@@ -7,12 +7,12 @@ part of 'device_model.dart';
 // **************************************************************************
 
 DeviceModel _$DeviceModelFromJson(Map<String, dynamic> json) => DeviceModel(
-      trigram: json['trigram'] as String,
-      serial: json['serial'] as String,
-      imei: json['imei'] as String,
-      env: json['env'] as String,
-      agencyAccount: json['agencyAccount'] as String,
-    );
+  trigram: json['trigram'] as String,
+  serial: json['serial'] as String,
+  imei: json['imei'] as String,
+  env: json['env'] as String,
+  agencyAccount: json['agencyAccount'] as String,
+);
 
 Map<String, dynamic> _$DeviceModelToJson(DeviceModel instance) =>
     <String, dynamic>{

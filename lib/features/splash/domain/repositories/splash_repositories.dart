@@ -1,1 +1,3 @@
-abstract class SplashRepositories {}
+abstract class SplashRepositories {
+  Future<void> initializeDeviceInfo();
+}

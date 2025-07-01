@@ -1,11 +1,16 @@
+import 'package:json_annotation/json_annotation.dart';
+
 import '../../domain/entities/chewie_video_entity.dart';
 
+part 'chewie_video_model.g.dart'; // This line is crucial
+
+@JsonSerializable()
 class ChewieVideoModel extends ChewieVideoEntity {
   const ChewieVideoModel({
-    required int id,
-    required String url,
-    String? description,
-  }) : super(id: id, url: url, description: description);
+    required super.id,
+    required super.url,
+    super.description,
+  });
 
   factory ChewieVideoModel.fromJson(Map<String, dynamic> json) {
     return ChewieVideoModel(
@@ -16,10 +21,6 @@ class ChewieVideoModel extends ChewieVideoEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'url': url,
-      'description': description,
-    };
+    return {'id': id, 'url': url, 'description': description};
   }
 }

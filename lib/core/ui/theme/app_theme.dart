@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-
-class _TextStyles {
-  final _Colors colors;
-
-  _TextStyles(this.colors);
-
-  // static const roboto = "Roboto";
-}
+// adapte le chemin
 
 class _Colors {
   Color get mPrimaryColor => const Color(0xff009ADF);
@@ -16,7 +9,6 @@ class _Colors {
 }
 
 class _Assets {
-  // splash screen assets
   String get logo => "assets/icons/logo.png";
 }
 
@@ -24,13 +16,20 @@ class _Values {
   String get appName => "Chrono driver";
 }
 
+class _TextStyles {
+  final _Colors colors;
+
+  _TextStyles(this.colors);
+}
+
 class AppTheme extends InheritedWidget {
+  final ThemeData themeData;
   final _Colors colors = _Colors();
   final _Values values = _Values();
   final _Assets assets = _Assets();
   late final _TextStyles textStyles;
 
-  AppTheme({super.key, required super.child}) {
+  AppTheme({super.key, required super.child, required this.themeData}) {
     textStyles = _TextStyles(colors);
   }
 

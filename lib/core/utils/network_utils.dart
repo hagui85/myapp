@@ -74,7 +74,7 @@ class NetworkUtils {
   }
 
   static Future<String> getBaseUrl(String endPoint) async {
-    var baseUrl;
+    String baseUrl;
     if (kDebugMode) {
       baseUrl = AppStrings.PFI_URL;
     } else {
